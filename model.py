@@ -140,17 +140,36 @@ datagen.fit(x_train)
 early_stopper = EarlyStopping(monitor='val_loss', min_delta=0, patience=0, verbose=1, mode='auto', restore_best_weights = True)
 
 #Training the model
-#model.fit(x_train, y_train,
-         #batch_size=batch_size,
-         #epochs=epochs,
-         #verbose=1,
-         #validation_data=(x_test, y_test),
-         #shuffle=True)
+
 # fits the model on batches with real-time data augmentation:
 model.fit_generator(datagen.flow(x_train, y_train, batch_size= batch_size), validation_data = (x_test, y_test), steps_per_epoch=len(x_train)/batch_size, epochs=epochs, verbose =1)
 
 #Saving the  model to  use it later on
-fer_json = model.to_json()
-with open("fer.json", "w") as json_file:
-    json_file.write(fer_json)
-model.save_weights("fer.h5")
+from google.colab import files
+files.download("fer.h5")
+files.download("fer.json")
+
+
+
+
+
+#making graphs of Loss vs time and Accuracy vs time
+import matplotlib.pyplot as plt
+plt.figure(figsize=(13,7))
+plt.subplot(1, 2, 1)
+plt.suptitle('Optimizer : Adam', fontsize=10)
+plt.ylabel('Loss', fontsize=16)
+plt.xlabel('epoch')
+plt.plot(model.history.history['loss'], label='Training Loss')
+plt.plot(model.history.history['val_loss'], label='Validation Loss')
+plt.legend(loc='upper right')
+
+plt.subplot(1, 2, 2)
+plt.ylabel('Accuracy', fontsize=16)
+plt.xlabel('epoch')
+plt.plot(model.history.history['accuracy'], label='Training Accuracy')
+plt.plot(model.history.history['val_accuracy'], label='Validation Accuracy')
+plt.legend(loc='lower right')
+plt.show()
+
+
